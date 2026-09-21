@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday!</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: radial-gradient(circle at center, #1a102f, #08060c);
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-align: center;
+      padding: 24px;
+    }
+    .hint {
+      position: absolute;
+      top: 32px;
+      font-size: 0.9rem;
+      letter-spacing: 0.05em;
+      opacity: 0.6;
+      text-transform: uppercase;
+      animation: pulse 1.8s infinite;
+    }
+    .message-box {
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 16px;
+    }
+    .message-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1.4;
+      background: linear-gradient(45deg, #ff9a9e, #fad0c4, #fbc2eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .progress {
+      position: absolute;
+      bottom: 40px;
+      font-size: 0.85rem;
+      opacity: 0.5;
+    }
+    .particle {
+      position: fixed;
+      pointer-events: none;
+      font-size: 1.5rem;
+      animation: floatUp 1s ease-out forwards;
+      z-index: 100;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.85; }
+    }
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.6) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx)), calc(-50% - 100px)) scale(1.4) rotate(var(--rot));
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hint" id="hint">Tap anywhere on the screen 👇</div>
+
+  <div class="message-box">
+    <div class="message-text" id="wishText">Ready for a surprise?</div>
+  </div>
+
+  <div class="progress" id="progress">Tap 1 / 6</div>
+
+  <script>
+    // Customize your wishes in order here:
+    const wishes = [
+      "Ready for a surprise?",
+      "Happy Birthday to someone truly special! 🎂",
+      "May this year bring you endless laughs and unforgettable memories ✨",
+      "Keep shining and chasing every dream you have 🌟",
+      "You deserve all the happiness the world has to offer 💖",
+      "🎉 HAVE THE BEST BIRTHDAY EVER! 🥳🎈"
+    ];
+
+    const icons = ["✨", "💖", "🎂", "🎈", "🌟", "🎉", "💐"];
+    let step = 0;
+
+    const wishText = document.getElementById("wishText");
+    const progress = document.getElementById("progress");
+    const hint = document.getElementById("hint");
+
+    function nextWish(e) {
+      // Advance step
+      step = Math.min(step + 1, wishes.length - 1);
+
+      // Text animation
+      wishText.style.opacity = "0";
+      wishText.style.transform = "scale(0.9)";
+      setTimeout(() => {
+        wishText.textContent = wishes[step];
+        wishText.style.opacity = "1";
+        wishText.style.transform = "scale(1)";
+      }, 150);
+
+      // Update counters
+      progress.textContent = `Tap ${step + 1} / ${wishes.length}`;
+      if (step === wishes.length - 1) {
+        hint.textContent = "You've reached the end! 🥳";
+      }
+
+      // Spawn click particles
+      const clientX = e.clientX || (e.touches && e.touches[0].clientX) || window.innerWidth / 2;
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY) || window.innerHeight / 2;
+
+      for (let i = 0; i < 7; i++) {
+        createParticle(clientX, clientY);
+      }
+    }
+
+    function createParticle(x, y) {
+      const p = document.createElement("div");
+      p.className = "particle";
+      p.textContent = icons[Math.floor(Math.random() * icons.length)];
+      p.style.left = `${x}px`;
+      p.style.top = `${y}px`;
+      p.style.setProperty("--dx", `${(Math.random() - 0.5) * 120}px`);
+      p.style.setProperty("--rot", `${(Math.random() - 0.5) * 90}deg`);
+      document.body.appendChild(p);
+
+      setTimeout(() => p.remove(), 1000);
+    }
+
+    document.body.addEventListener("pointerdown", nextWish);
+  </script>
+</body>
+</html>
